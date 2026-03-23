@@ -5,3 +5,7 @@ Questi devono inviare l’ID del prodotto a un database, e questo deve restituir
 le informazioni del prodotto collegato a quel ID, come nome e prezzo.
 Il database conterrà quindi: ID_Prodotto, Nome, Prezzo.
 Queste possono essere utili anche in caso di furto.
+
+Il DB verrà creato sul server della scuola, il codice sql verrà caricato 
+qui su Github, il Docker servirà per effettuare dei test prima di caricare 
+il DB sul server della scuola.
