@@ -7,5 +7,5 @@ Il database conterrà quindi: ID_Prodotto, Nome, Prezzo.
 Queste possono essere utili anche in caso di furto.
 
 Il DB verrà creato sul server della scuola, il codice sql verrà caricato 
-qui su Github, il Docker servirà per effettuare dei test prima di caricare 
-il DB sul server della scuola.
+anche qui su Github, il Docker servirà per effettuare i test prima di 
+caricare il DB sul server della scuola.
