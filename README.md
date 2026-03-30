@@ -10,5 +10,5 @@ Sito web dove visualizzare lo stoccaggio del magazzino, con tabella con
 scritte le scadenze.
 
 Il DB verrà creato sul server della scuola, il codice sql verrà caricato 
-anche qui su Github, il Docker servirà per effettuare i test prima di 
-caricare il DB sul server della scuola.
+anche qui su Github, il Docker servirà per effettuare i test in un ambiente
+protetto.
