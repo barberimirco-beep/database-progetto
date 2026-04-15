@@ -1,6 +1,22 @@
-version: '3'
+version: "3.8"
+
 services:
-  app:
-    image: nginx:latest
-    ports:
-      - "8080:80"
+ mysql:
+   image: mysql:8.0
+   container_name: mysql_local
+   restart: unless-stopped
+
+   environment:
+     MYSQL_ROOT_PASSWORD: mentdit
+     MYSQL_DATABASE: prodotti_db
+     MYSQL_USER: user
+     MYSQL_PASSWORD: pissuord
+
+   ports:
+     - "3306:3306"
+
+   volumes:
+     - mysql_data:/var/lib/mysql
+
+volumes:
+ mysql_data:
