@@ -52,7 +52,7 @@ services:
 # ─────────────────────────────────────────────
 networks:
   rfid_net:
-    driver: bridge
+  driver: bridge
 
 # ─────────────────────────────────────────────
 # Volume nominato per la persistenza del DB
