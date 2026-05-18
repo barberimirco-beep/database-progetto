@@ -39,7 +39,7 @@ services:
 
 networks:
   rfid_net:
-    driver: bridge
+    external: true  # ← usa la rete che hai appena creato manualmente
 
 volumes:
   db_data:
