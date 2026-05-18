@@ -6,10 +6,10 @@ services:
     restart: unless-stopped
 
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: rfid
-      MYSQL_USER: rfiduser
-      MYSQL_PASSWORD: rfidpass
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 
     volumes:
       - db_data:/var/lib/mysql
