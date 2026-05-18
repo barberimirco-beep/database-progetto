@@ -4,16 +4,13 @@ services:
     build: ./mysql
     container_name: rfid_db
     restart: unless-stopped
-
     environment:
-      MYSQL_HOST: ${MYSQL_HOST}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE:      ${MYSQL_DATABASE}
+      MYSQL_USER:          ${MYSQL_USER}
+      MYSQL_PASSWORD:      ${MYSQL_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
-
     networks:
       - rfid_net
 
@@ -21,25 +18,21 @@ services:
     build: ./src
     container_name: rfid_web
     restart: unless-stopped
-
     environment:
-      MYSQL_HOST: db
-      MYSQL_DATABASE: rfid
-      MYSQL_USER: rfiduser
-      MYSQL_PASSWORD: rfidpass
-
+      MYSQL_HOST:     rfid_db
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER:     ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "10044:80"
-
     depends_on:
       - db
-
     networks:
       - rfid_net
 
 networks:
   rfid_net:
-    external: true  # ← usa la rete che hai appena creato manualmente
+    external: true
 
 volumes:
   db_data:
