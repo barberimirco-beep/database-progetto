@@ -1,30 +1,68 @@
-version: '3.9'
-
 services:
+
+  # ─────────────────────────────────────────────
+  # Servizio database MySQL
+  # ─────────────────────────────────────────────
   db:
     image: mysql:8.0
-    container_name: school_mysql
-    restart: always
+    container_name: rfid_db
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    ports:
-      - "10044:3306"
+      MYSQL_DATABASE:      ${MYSQL_DATABASE}
+      MYSQL_USER:          ${MYSQL_USER}
+      MYSQL_PASSWORD:      ${MYSQL_PASSWORD}
     volumes:
+      # Persistenza dei dati: il database sopravvive al riavvio del container
       - db_data:/var/lib/mysql
+      # Script SQL eseguito automaticamente al primo avvio
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - rfid_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: school_pma
-    restart: always
-    ports:
-      - "8080:80"
+  # ─────────────────────────────────────────────
+  # Servizio web: Apache + PHP (API + frontend)
+  # ─────────────────────────────────────────────
+  web:
+    image: php:8.2-apache
+    container_name: rfid_web
+    restart: unless-stopped
+    # Installa l'estensione mysqli necessaria per connettersi a MySQL
+    command: >
+      sh -c "docker-php-ext-install mysqli &&
+             apache2-foreground"
     environment:
-      PMA_HOST: db
-      PMA_USER: ${MYSQL_USER}
-      PMA_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_HOST:     db          # Nome del servizio Docker (risolto dalla rete interna)
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER:     ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      # Cartella sorgente montata nel DocumentRoot di Apache
+      - ./src:/var/www/html
+    ports:
+      # Porta esterna 10044 → porta interna 80 del container
+      - "${APP_PORT}:80"
+    depends_on:
+      db:
+        condition: service_healthy   # Aspetta che MySQL sia pronto prima di avviare Apache
+    networks:
+      - rfid_net
 
+# ─────────────────────────────────────────────
+# Rete interna (i container si vedono tra loro)
+# ─────────────────────────────────────────────
+networks:
+  rfid_net:
+    driver: bridge
+
+# ─────────────────────────────────────────────
+# Volume nominato per la persistenza del DB
+# ─────────────────────────────────────────────
 volumes:
   db_data:
