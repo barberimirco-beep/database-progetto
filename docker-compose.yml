@@ -9,52 +9,53 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE:      ${MYSQL_DATABASE}
-      MYSQL_USER:          ${MYSQL_USER}
-      MYSQL_PASSWORD:      ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      # Persistenza dei dati: il database sopravvive al riavvio del container
       - db_data:/var/lib/mysql
-      # Script SQL eseguito automaticamente al primo avvio
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       - rfid_net
 
   # ─────────────────────────────────────────────
-  # Servizio web: Apache + PHP (API + frontend)
+  # Servizio web: Apache + PHP
   # ─────────────────────────────────────────────
   web:
     image: php:8.2-apache
     container_name: rfid_web
     restart: unless-stopped
-    # Installa l'estensione mysqli necessaria per connettersi a MySQL
+
     command: >
       sh -c "docker-php-ext-install mysqli && apache2-foreground"
+
     environment:
-      MYSQL_HOST:     db          # Nome del servizio Docker (risolto dalla rete interna)
+      MYSQL_HOST: db
       MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER:     ${MYSQL_USER}
+      MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
     volumes:
-      # Cartella sorgente montata nel DocumentRoot di Apache
       - ./src:/var/www/html
+
     ports:
-      # Porta esterna 10044 → porta interna 80 del container
       - "${APP_PORT}:80"
-   depends_on:
+
+    depends_on:
       - db
+
     networks:
       - rfid_net
 
 # ─────────────────────────────────────────────
-# Rete interna (i container si vedono tra loro)
+# Rete interna
 # ─────────────────────────────────────────────
 networks:
   rfid_net:
-  driver: bridge
+    driver: bridge
 
 # ─────────────────────────────────────────────
-# Volume nominato per la persistenza del DB
+# Volume DB
 # ─────────────────────────────────────────────
 volumes:
   db_data:
