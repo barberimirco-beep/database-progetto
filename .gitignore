@@ -1,1 +1,28 @@
+# ══════════════════════════════════════════════════════════════
+#  .gitignore — File e cartelle da NON caricare su GitHub
+# ══════════════════════════════════════════════════════════════
+
+# ── SICUREZZA: variabili d'ambiente con credenziali ───────────
 .env
+.env.*
+!.env.example      # Eccezione: il file di esempio (senza valori reali) va committato
+
+# ── Docker: volumi e dati persistenti ────────────────────────
+docker-data/
+mysql-data/
+
+# ── Sistemi operativi ─────────────────────────────────────────
+.DS_Store          # macOS
+Thumbs.db          # Windows
+desktop.ini
+
+# ── Editor e IDE ──────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── Log ───────────────────────────────────────────────────────
+*.log
+logs/
