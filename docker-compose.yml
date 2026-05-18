@@ -29,8 +29,7 @@ services:
     restart: unless-stopped
     # Installa l'estensione mysqli necessaria per connettersi a MySQL
     command: >
-      sh -c "docker-php-ext-install mysqli &&
-             apache2-foreground"
+      sh -c "docker-php-ext-install mysqli && apache2-foreground"
     environment:
       MYSQL_HOST:     db          # Nome del servizio Docker (risolto dalla rete interna)
       MYSQL_DATABASE: ${MYSQL_DATABASE}
