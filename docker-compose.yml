@@ -18,7 +18,7 @@ services:
       - rfid_net
 
   web:
-    build: .
+    build: ./src
     container_name: rfid_web
     restart: unless-stopped
 
