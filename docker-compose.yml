@@ -19,12 +19,6 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       - rfid_net
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
 
   # ─────────────────────────────────────────────
   # Servizio web: Apache + PHP (API + frontend)
@@ -48,9 +42,8 @@ services:
     ports:
       # Porta esterna 10044 → porta interna 80 del container
       - "${APP_PORT}:80"
-    depends_on:
-      db:
-        condition: service_healthy   # Aspetta che MySQL sia pronto prima di avviare Apache
+   depends_on:
+      - db
     networks:
       - rfid_net
 
