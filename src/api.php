@@ -29,11 +29,17 @@ if ($conn->connect_error) {
 $conn->set_charset('utf8mb4');
 
 // ── Query: ultimi 100 record ordinati per data decrescente ────
-$sql    = "SELECT id, product_id, product_name, price,
-                  DATE_FORMAT(read_at, '%d/%m/%Y %H:%i:%s') AS read_at
-           FROM rfid_readings
-           ORDER BY read_at DESC
-           LIMIT 100";
+// AGGIUNTO: campo movement
+$sql = "SELECT 
+            id,
+            product_id,
+            product_name,
+            price,
+            movement,
+            DATE_FORMAT(read_at, '%d/%m/%Y %H:%i:%s') AS read_at
+        FROM rfid_readings
+        ORDER BY read_at DESC
+        LIMIT 100";
 
 $result = $conn->query($sql);
 
@@ -49,12 +55,18 @@ if (!$result) {
 
 // ── Costruisce l'array di risultati ──────────────────────────
 $rows = [];
+
 while ($row = $result->fetch_assoc()) {
+
     $rows[] = [
         'id'           => (int)   $row['id'],
         'product_id'   =>         $row['product_id'],
         'product_name' =>         $row['product_name'],
         'price'        => (float) $row['price'],
+
+        // AGGIUNTO: stato movimento
+        'movement'     =>         $row['movement'] ?: 'IN',
+
         'read_at'      =>         $row['read_at'],
     ];
 }
