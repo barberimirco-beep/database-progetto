@@ -1,7 +1,6 @@
 <?php
 // ══════════════════════════════════════════════════════════════
 //  api_scan.php — Riceve la lettura RFID dall'ESP32
-//  e la inserisce nella tabella rfid_readings
 // ══════════════════════════════════════════════════════════════
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
@@ -22,10 +21,9 @@ $user = getenv('MYSQL_USER')     ?: 'rfid_user';
 $pass = getenv('MYSQL_PASSWORD') ?: '';
 
 // ── Leggi il JSON inviato dall'ESP32 ─────────────────────────
-$data = json_decode(file_get_contents('php://input'), true);
-
+$data     = json_decode(file_get_contents('php://input'), true);
 $tag_rfid = trim($data['tag_rfid'] ?? '');
-$tipo     = trim($data['tipo']     ?? '');   // "entrata" o "uscita"
+$tipo     = trim($data['tipo']     ?? '');
 
 if (!$tag_rfid || !$tipo) {
     http_response_code(400);
@@ -33,7 +31,7 @@ if (!$tag_rfid || !$tipo) {
     exit;
 }
 
-// ── Connessione (identica al tuo api.php) ────────────────────
+// ── Connessione ───────────────────────────────────────────────
 $conn = new mysqli($host, $user, $pass, $db);
 if ($conn->connect_error) {
     http_response_code(503);
@@ -42,54 +40,38 @@ if ($conn->connect_error) {
 }
 $conn->set_charset('utf8mb4');
 
-// ── Cerca il prodotto associato al tag nella tua tabella ──────
-// Se hai una tabella prodotti con tag_rfid, recupera nome e prezzo.
-// Altrimenti usa il tag come product_id e lascia nome/prezzo vuoti.
-$product_id   = $tag_rfid;
-$product_name = $tag_rfid;
-$price        = 0.0;
+// ── Cerca il prodotto nella tabella products ──────────────────
+$stmt = $conn->prepare('SELECT product_name, price FROM products WHERE tag_rfid = ?');
+$stmt->bind_param('s', $tag_rfid);
+$stmt->execute();
+$stmt->bind_result($product_name, $price);
 
-$stmt = $conn->prepare(
-    "SELECT product_id, product_name, price
-     FROM rfid_readings
-     WHERE product_id = ?
-     ORDER BY read_at DESC
-     LIMIT 1"
-);
-if ($stmt) {
-    $stmt->bind_param('s', $tag_rfid);
-    $stmt->execute();
-    $stmt->bind_result($pid, $pname, $pprice);
-    if ($stmt->fetch()) {
-        $product_id   = $pid;
-        $product_name = $pname;
-        $price        = (float)$pprice;
-    }
+if (!$stmt->fetch()) {
+    // Tag non registrato nella tabella products
+    http_response_code(404);
+    echo json_encode([
+        'success' => false,
+        'error'   => "Tag $tag_rfid non registrato. Aggiungilo nella tabella products in init.sql"
+    ]);
     $stmt->close();
+    $conn->close();
+    exit;
 }
+$stmt->close();
 
-// ── Converti tipo → movement (IN / OUT) ──────────────────────
+// ── Converti tipo → movement ──────────────────────────────────
 $movement = ($tipo === 'entrata') ? 'IN' : 'OUT';
 
 // ── Inserisci la lettura ──────────────────────────────────────
 $ins = $conn->prepare(
-    "INSERT INTO rfid_readings (product_id, product_name, price, movement)
-     VALUES (?, ?, ?, ?)"
+    'INSERT INTO rfid_readings (product_id, product_name, price, movement) VALUES (?, ?, ?, ?)'
 );
-if (!$ins) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Prepare: ' . $conn->error]);
-    $conn->close();
-    exit;
-}
-
-$ins->bind_param('ssds', $product_id, $product_name, $price, $movement);
+$ins->bind_param('ssds', $tag_rfid, $product_name, $price, $movement);
 
 if (!$ins->execute()) {
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Insert: ' . $ins->error]);
-    $ins->close();
-    $conn->close();
+    echo json_encode(['success' => false, 'error' => $ins->error]);
+    $ins->close(); $conn->close();
     exit;
 }
 
@@ -97,14 +79,14 @@ $new_id = $conn->insert_id;
 $ins->close();
 $conn->close();
 
-// ── Risposta ──────────────────────────────────────────────────
 echo json_encode([
     'success'      => true,
     'movimento_id' => $new_id,
     'prodotto'     => [
-        'product_id'   => $product_id,
-        'product_name' => $product_name,
-        'movement'     => $movement,
+        'tag'      => $tag_rfid,
+        'nome'     => $product_name,
+        'prezzo'   => $price,
+        'movement' => $movement,
     ],
-    'message' => 'Lettura registrata con successo',
+    'message' => "Lettura registrata: $product_name ($movement)",
 ], JSON_UNESCAPED_UNICODE);
