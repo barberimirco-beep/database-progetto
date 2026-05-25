@@ -7,9 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet" />
-
+ 
   <style>
-    /* ── CSS Variables ─────────────────────────────────────── */
     :root {
       --bg:          #0a0e14;
       --bg-panel:    #0f1520;
@@ -19,6 +18,8 @@
       --accent-dim:  #00a370;
       --accent-glow: rgba(0, 229, 160, 0.15);
       --warn:        #ffb800;
+      --in-color:    #3b9eff;
+      --out-color:   #ff5c5c;
       --text:        #c8d6e5;
       --text-dim:    #5a7a8a;
       --border:      #1e2d3d;
@@ -27,10 +28,9 @@
       --radius:      6px;
       --transition:  0.25s ease;
     }
-
-    /* ── Reset & Base ──────────────────────────────────────── */
+ 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
     body {
       background-color: var(--bg);
       color: var(--text);
@@ -41,24 +41,16 @@
       flex-direction: column;
       overflow-x: hidden;
     }
-
-    /* ── Scanline overlay for CRT feel ────────────────────── */
+ 
     body::before {
       content: '';
       position: fixed;
       inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,0,0,0.04) 2px,
-        rgba(0,0,0,0.04) 4px
-      );
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
       pointer-events: none;
       z-index: 999;
     }
-
-    /* ── Header ────────────────────────────────────────────── */
+ 
     header {
       padding: 20px 40px;
       border-bottom: 1px solid var(--border);
@@ -67,13 +59,9 @@
       align-items: center;
       gap: 20px;
     }
-
-    .logo-icon {
-      width: 44px;
-      height: 44px;
-      flex-shrink: 0;
-    }
-
+ 
+    .logo-icon { width: 44px; height: 44px; flex-shrink: 0; }
+ 
     .header-text h1 {
       font-family: var(--mono);
       font-size: 1.1rem;
@@ -81,7 +69,7 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
     }
-
+ 
     .header-text p {
       font-size: 0.72rem;
       color: var(--text-dim);
@@ -89,7 +77,7 @@
       letter-spacing: 0.06em;
       margin-top: 2px;
     }
-
+ 
     .header-status {
       margin-left: auto;
       display: flex;
@@ -99,22 +87,20 @@
       font-size: 0.75rem;
       color: var(--accent);
     }
-
+ 
     .pulse {
-      width: 8px;
-      height: 8px;
+      width: 8px; height: 8px;
       border-radius: 50%;
       background: var(--accent);
       box-shadow: 0 0 8px var(--accent);
       animation: pulse 1.8s ease-in-out infinite;
     }
-
+ 
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
       50%       { opacity: 0.4; transform: scale(0.8); }
     }
-
-    /* ── Main layout ───────────────────────────────────────── */
+ 
     main {
       flex: 1;
       padding: 30px 40px;
@@ -122,15 +108,14 @@
       width: 100%;
       margin: 0 auto;
     }
-
-    /* ── Metric cards ──────────────────────────────────────── */
+ 
     .metrics {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 14px;
       margin-bottom: 30px;
     }
-
+ 
     .card {
       background: var(--bg-panel);
       border: 1px solid var(--border);
@@ -142,7 +127,7 @@
       transform: translateY(12px);
       animation: fadeUp 0.5s ease forwards;
     }
-
+ 
     .card::before {
       content: '';
       position: absolute;
@@ -150,15 +135,18 @@
       height: 2px;
       background: linear-gradient(90deg, var(--accent), transparent);
     }
-
+ 
+    .card.in-card::before  { background: linear-gradient(90deg, var(--in-color), transparent); }
+    .card.out-card::before { background: linear-gradient(90deg, var(--out-color), transparent); }
+ 
     .card:nth-child(2) { animation-delay: 0.07s; }
     .card:nth-child(3) { animation-delay: 0.14s; }
     .card:nth-child(4) { animation-delay: 0.21s; }
-
-    @keyframes fadeUp {
-      to { opacity: 1; transform: none; }
-    }
-
+    .card:nth-child(5) { animation-delay: 0.28s; }
+    .card:nth-child(6) { animation-delay: 0.35s; }
+ 
+    @keyframes fadeUp { to { opacity: 1; transform: none; } }
+ 
     .card-label {
       font-family: var(--mono);
       font-size: 0.65rem;
@@ -167,17 +155,18 @@
       text-transform: uppercase;
       margin-bottom: 8px;
     }
-
+ 
     .card-value {
       font-family: var(--mono);
       font-size: 1.9rem;
       color: var(--accent);
       line-height: 1;
     }
-
+ 
     .card-value.warn { color: var(--warn); }
-
-    /* ── Controls bar ──────────────────────────────────────── */
+    .card-value.in   { color: var(--in-color); }
+    .card-value.out  { color: var(--out-color); }
+ 
     .controls {
       display: flex;
       align-items: center;
@@ -185,7 +174,7 @@
       margin-bottom: 16px;
       flex-wrap: wrap;
     }
-
+ 
     .section-title {
       font-family: var(--mono);
       font-size: 0.75rem;
@@ -194,11 +183,9 @@
       text-transform: uppercase;
       flex: 1;
     }
-
-    .section-title span {
-      color: var(--accent);
-    }
-
+ 
+    .section-title span { color: var(--accent); }
+ 
     button {
       font-family: var(--mono);
       font-size: 0.75rem;
@@ -210,39 +197,40 @@
       transition: var(--transition);
       text-transform: uppercase;
     }
-
-    .btn-primary {
-      background: var(--accent);
-      color: var(--bg);
-      font-weight: 600;
+ 
+    .btn-primary { background: var(--accent); color: var(--bg); font-weight: 600; }
+    .btn-primary:hover { background: #00ffc3; box-shadow: 0 0 16px rgba(0,229,160,0.4); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-secondary { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
+    .btn-secondary:hover { color: var(--text); border-color: var(--accent-dim); }
+ 
+    /* Filtro movimento */
+    .mov-filter {
+      display: flex;
+      gap: 6px;
     }
-
-    .btn-primary:hover {
-      background: #00ffc3;
-      box-shadow: 0 0 16px rgba(0,229,160,0.4);
-    }
-
-    .btn-primary:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    .btn-secondary {
+ 
+    .mov-btn {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      padding: 6px 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
       background: transparent;
       color: var(--text-dim);
-      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: var(--transition);
+      text-transform: uppercase;
     }
-
-    .btn-secondary:hover {
-      color: var(--text);
-      border-color: var(--accent-dim);
-    }
-
-    /* ── Search input ──────────────────────────────────────── */
-    .search-wrap {
-      position: relative;
-    }
-
+ 
+    .mov-btn:hover { color: var(--text); }
+    .mov-btn.all.active   { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+    .mov-btn.in.active    { border-color: var(--in-color); color: var(--in-color); background: rgba(59,158,255,0.1); }
+    .mov-btn.out.active   { border-color: var(--out-color); color: var(--out-color); background: rgba(255,92,92,0.1); }
+ 
+    .search-wrap { position: relative; }
+ 
     .search-wrap input {
       background: var(--bg-panel);
       border: 1px solid var(--border);
@@ -255,14 +243,10 @@
       outline: none;
       transition: var(--transition);
     }
-
-    .search-wrap input:focus {
-      border-color: var(--accent-dim);
-      box-shadow: 0 0 0 3px var(--accent-glow);
-    }
-
+ 
+    .search-wrap input:focus { border-color: var(--accent-dim); box-shadow: 0 0 0 3px var(--accent-glow); }
     .search-wrap input::placeholder { color: var(--text-dim); }
-
+ 
     .search-icon {
       position: absolute;
       left: 10px;
@@ -272,25 +256,18 @@
       font-size: 0.8rem;
       pointer-events: none;
     }
-
-    /* ── Table ─────────────────────────────────────────────── */
+ 
     .table-wrapper {
       background: var(--bg-panel);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       overflow: hidden;
     }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    thead {
-      background: rgba(0,229,160,0.05);
-      border-bottom: 1px solid var(--border);
-    }
-
+ 
+    table { width: 100%; border-collapse: collapse; }
+ 
+    thead { background: rgba(0,229,160,0.05); border-bottom: 1px solid var(--border); }
+ 
     th {
       font-family: var(--mono);
       font-size: 0.65rem;
@@ -304,41 +281,30 @@
       cursor: pointer;
       user-select: none;
     }
-
+ 
     th:hover { color: #fff; }
-
-    th .sort-arrow {
-      display: inline-block;
-      margin-left: 4px;
-      opacity: 0.4;
-      font-size: 0.6rem;
-    }
-
+    th .sort-arrow { display: inline-block; margin-left: 4px; opacity: 0.4; font-size: 0.6rem; }
     th.active .sort-arrow { opacity: 1; color: var(--accent); }
-
+ 
     tbody tr {
       border-bottom: 1px solid rgba(30, 45, 61, 0.6);
       transition: background var(--transition);
       opacity: 0;
       animation: rowIn 0.35s ease forwards;
     }
-
+ 
     tbody tr:nth-child(even) { background: var(--bg-row-alt); }
     tbody tr:nth-child(odd)  { background: var(--bg-row); }
     tbody tr:hover { background: rgba(0, 229, 160, 0.06); }
-
+ 
     @keyframes rowIn {
       from { opacity: 0; transform: translateX(-6px); }
       to   { opacity: 1; transform: none; }
     }
-
-    td {
-      padding: 13px 18px;
-      font-size: 0.85rem;
-    }
-
+ 
+    td { padding: 13px 18px; font-size: 0.85rem; }
     td.mono { font-family: var(--mono); font-size: 0.78rem; }
-
+ 
     .tag-badge {
       display: inline-block;
       background: var(--accent-glow);
@@ -350,19 +316,24 @@
       border-radius: 3px;
       letter-spacing: 0.05em;
     }
-
-    .price-cell {
+ 
+    /* Badge IN / OUT */
+    .mov-badge {
+      display: inline-block;
       font-family: var(--mono);
-      color: var(--warn);
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 3px;
+      letter-spacing: 0.08em;
     }
-
-    .id-cell {
-      font-family: var(--mono);
-      color: var(--text-dim);
-      font-size: 0.72rem;
-    }
-
-    /* ── States ────────────────────────────────────────────── */
+ 
+    .mov-badge.IN  { background: rgba(59,158,255,0.12); border: 1px solid rgba(59,158,255,0.3); color: var(--in-color); }
+    .mov-badge.OUT { background: rgba(255,92,92,0.12);  border: 1px solid rgba(255,92,92,0.3);  color: var(--out-color); }
+ 
+    .price-cell { font-family: var(--mono); color: var(--warn); }
+    .id-cell    { font-family: var(--mono); color: var(--text-dim); font-size: 0.72rem; }
+ 
     .state-row td {
       text-align: center;
       padding: 40px;
@@ -370,11 +341,10 @@
       font-size: 0.8rem;
       color: var(--text-dim);
     }
-
+ 
     .spinner {
       display: inline-block;
-      width: 20px;
-      height: 20px;
+      width: 20px; height: 20px;
       border: 2px solid var(--border);
       border-top-color: var(--accent);
       border-radius: 50%;
@@ -382,12 +352,11 @@
       vertical-align: middle;
       margin-right: 8px;
     }
-
+ 
     @keyframes spin { to { transform: rotate(360deg); } }
-
+ 
     .error-msg { color: #ff5757; }
-
-    /* ── Footer ────────────────────────────────────────────── */
+ 
     footer {
       padding: 16px 40px;
       border-top: 1px solid var(--border);
@@ -399,22 +368,20 @@
       color: var(--text-dim);
       letter-spacing: 0.06em;
     }
-
+ 
     .footer-time { color: var(--accent-dim); }
-
-    /* ── Responsive ────────────────────────────────────────── */
+ 
     @media (max-width: 700px) {
       header, main, footer { padding-left: 16px; padding-right: 16px; }
-      .search-wrap input { width: 140px; }
-      td, th { padding: 10px 12px; }
+      .search-wrap input { width: 130px; }
+      td, th { padding: 10px 10px; }
       .card-value { font-size: 1.4rem; }
     }
   </style>
 </head>
-
+ 
 <body>
-
-  <!-- ── Header ─────────────────────────────────────────────── -->
+ 
   <header>
     <svg class="logo-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect width="44" height="44" rx="8" fill="rgba(0,229,160,0.08)"/>
@@ -436,11 +403,9 @@
       <span id="status-text">ONLINE</span>
     </div>
   </header>
-
-  <!-- ── Main ───────────────────────────────────────────────── -->
+ 
   <main>
-
-    <!-- Metric cards -->
+ 
     <div class="metrics">
       <div class="card">
         <div class="card-label">Letture totali</div>
@@ -449,6 +414,14 @@
       <div class="card">
         <div class="card-label">Prodotti unici</div>
         <div class="card-value" id="metric-unique">—</div>
+      </div>
+      <div class="card in-card">
+        <div class="card-label">Entrate (IN)</div>
+        <div class="card-value in" id="metric-in">—</div>
+      </div>
+      <div class="card out-card">
+        <div class="card-label">Uscite (OUT)</div>
+        <div class="card-value out" id="metric-out">—</div>
       </div>
       <div class="card">
         <div class="card-label">Valore medio (€)</div>
@@ -459,10 +432,14 @@
         <div class="card-value warn" id="metric-last" style="font-size:1rem;padding-top:4px">—</div>
       </div>
     </div>
-
-    <!-- Controls bar -->
+ 
     <div class="controls">
       <div class="section-title">Registro letture <span id="count-label"></span></div>
+      <div class="mov-filter">
+        <button class="mov-btn all active" data-mov="">Tutti</button>
+        <button class="mov-btn in"         data-mov="IN">↑ IN</button>
+        <button class="mov-btn out"        data-mov="OUT">↓ OUT</button>
+      </div>
       <div class="search-wrap">
         <span class="search-icon">⌕</span>
         <input type="text" id="search" placeholder="Cerca prodotto…" autocomplete="off" />
@@ -470,132 +447,132 @@
       <button class="btn-secondary" id="btn-export">↓ CSV</button>
       <button class="btn-primary"   id="btn-refresh">⟳ Aggiorna</button>
     </div>
-
-    <!-- Data table -->
+ 
     <div class="table-wrapper">
       <table>
         <thead>
           <tr>
-            <th data-col="id">        # <span class="sort-arrow">↕</span></th>
-            <th data-col="product_id">Tag RFID <span class="sort-arrow">↕</span></th>
-            <th data-col="product_name">Prodotto <span class="sort-arrow">↕</span></th>
-            <th data-col="price">     Prezzo <span class="sort-arrow">↕</span></th>
-            <th data-col="read_at">   Timestamp <span class="sort-arrow">↕</span></th>
+            <th data-col="id">           # <span class="sort-arrow">↕</span></th>
+            <th data-col="product_id">   Tag RFID <span class="sort-arrow">↕</span></th>
+            <th data-col="product_name"> Prodotto <span class="sort-arrow">↕</span></th>
+            <th data-col="movement">     Movimento <span class="sort-arrow">↕</span></th>
+            <th data-col="price">        Prezzo <span class="sort-arrow">↕</span></th>
+            <th data-col="read_at">      Timestamp <span class="sort-arrow">↕</span></th>
           </tr>
         </thead>
         <tbody id="table-body">
           <tr class="state-row">
-            <td colspan="5"><span class="spinner"></span> Caricamento dati…</td>
+            <td colspan="6"><span class="spinner"></span> Caricamento dati…</td>
           </tr>
         </tbody>
       </table>
     </div>
-
+ 
   </main>
-
-  <!-- ── Footer ─────────────────────────────────────────────── -->
+ 
   <footer>
     <span>RFID Tracking System · Progetto Scolastico</span>
     <span class="footer-time" id="footer-time"></span>
   </footer>
-
-  <!-- ── JavaScript ─────────────────────────────────────────── -->
+ 
   <script>
-    // ── Stato dell'applicazione ──────────────────────────────
-    let allData    = [];   // tutti i record dal server
-    let sortCol    = 'id'; // colonna attiva per l'ordinamento
-    let sortAsc    = false;// direzione ordinamento
-    let filterText = '';   // testo di ricerca
-
-    // ── Fetch dati dall'API PHP ──────────────────────────────
+    let allData    = [];
+    let sortCol    = 'id';
+    let sortAsc    = false;
+    let filterText = '';
+    let filterMov  = '';   // '' | 'IN' | 'OUT'
+ 
     async function loadData() {
       const btn  = document.getElementById('btn-refresh');
       const body = document.getElementById('table-body');
       btn.disabled = true;
-      body.innerHTML = `<tr class="state-row"><td colspan="5"><span class="spinner"></span> Caricamento…</td></tr>`;
-
+      body.innerHTML = `<tr class="state-row"><td colspan="6"><span class="spinner"></span> Caricamento…</td></tr>`;
+ 
       try {
-        // Aggiunge ?t= per evitare la cache del browser
         const res  = await fetch(`api.php?t=${Date.now()}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
         if (!json.success) throw new Error(json.error || 'Errore sconosciuto');
-
+ 
         allData = json.data;
         updateMetrics(allData);
         renderTable();
         document.getElementById('status-text').textContent = 'ONLINE';
-
+ 
       } catch (err) {
-        body.innerHTML = `<tr class="state-row"><td colspan="5" class="error-msg">⚠ Errore: ${err.message}</td></tr>`;
+        body.innerHTML = `<tr class="state-row"><td colspan="6" class="error-msg">⚠ Errore: ${err.message}</td></tr>`;
         document.getElementById('status-text').textContent = 'ERRORE';
         console.error(err);
       } finally {
         btn.disabled = false;
       }
     }
-
-    // ── Calcola e mostra le metriche ─────────────────────────
+ 
     function updateMetrics(data) {
-      const unique  = new Set(data.map(r => r.product_id)).size;
-      const prices  = data.map(r => r.price);
-      const avg     = prices.length ? (prices.reduce((a,b) => a + b, 0) / prices.length).toFixed(2) : '—';
-      const lastRow = data[0]; // già ordinato DESC dal server
-
+      const unique = new Set(data.map(r => r.product_id)).size;
+      const inCount  = data.filter(r => r.movement === 'IN').length;
+      const outCount = data.filter(r => r.movement === 'OUT').length;
+      const prices = data.map(r => r.price);
+      const avg    = prices.length ? (prices.reduce((a,b) => a+b, 0) / prices.length).toFixed(2) : '—';
+      const last   = data[0];
+ 
       document.getElementById('metric-total').textContent  = data.length;
       document.getElementById('metric-unique').textContent = unique;
+      document.getElementById('metric-in').textContent     = inCount;
+      document.getElementById('metric-out').textContent    = outCount;
       document.getElementById('metric-avg').textContent    = avg !== '—' ? `€${avg}` : '—';
-      document.getElementById('metric-last').textContent   = lastRow ? lastRow.read_at : '—';
+      document.getElementById('metric-last').textContent   = last ? last.read_at : '—';
     }
-
-    // ── Applica filtro e ordinamento, poi renderizza ─────────
+ 
     function renderTable() {
-      const body    = document.getElementById('table-body');
-      const search  = filterText.toLowerCase();
-
-      let rows = allData.filter(r =>
-        r.product_id.toLowerCase().includes(search) ||
-        r.product_name.toLowerCase().includes(search)
-      );
-
-      // Ordinamento
+      const body   = document.getElementById('table-body');
+      const search = filterText.toLowerCase();
+ 
+      let rows = allData.filter(r => {
+        const matchSearch = r.product_id.toLowerCase().includes(search) ||
+                            r.product_name.toLowerCase().includes(search);
+        const matchMov    = !filterMov || r.movement === filterMov;
+        return matchSearch && matchMov;
+      });
+ 
       rows = rows.sort((a, b) => {
         let va = a[sortCol], vb = b[sortCol];
         if (typeof va === 'number') return sortAsc ? va - vb : vb - va;
         return sortAsc ? String(va).localeCompare(String(vb))
                        : String(vb).localeCompare(String(va));
       });
-
+ 
       document.getElementById('count-label').textContent =
-        rows.length !== allData.length ? `(${rows.length} / ${allData.length})` : `(${allData.length})`;
-
+        rows.length !== allData.length
+          ? `(${rows.length} / ${allData.length})`
+          : `(${allData.length})`;
+ 
       if (!rows.length) {
-        body.innerHTML = `<tr class="state-row"><td colspan="5">Nessun risultato per "${filterText}"</td></tr>`;
+        body.innerHTML = `<tr class="state-row"><td colspan="6">Nessun risultato</td></tr>`;
         return;
       }
-
+ 
       body.innerHTML = rows.map((r, i) => `
         <tr style="animation-delay:${i * 0.04}s">
           <td class="id-cell">${r.id}</td>
           <td><span class="tag-badge">${escHtml(r.product_id)}</span></td>
           <td>${escHtml(r.product_name)}</td>
-          <td class="price-cell">€ ${r.price.toFixed(2)}</td>
+          <td><span class="mov-badge ${escHtml(r.movement)}">${escHtml(r.movement)}</span></td>
+          <td class="price-cell">€ ${parseFloat(r.price).toFixed(2)}</td>
           <td class="mono">${escHtml(r.read_at)}</td>
         </tr>
       `).join('');
     }
-
-    // ── Escape XSS basilare ──────────────────────────────────
+ 
     function escHtml(s) {
-      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
-
-    // ── Export CSV ───────────────────────────────────────────
+ 
     function exportCSV() {
-      const header = ['ID','Tag RFID','Prodotto','Prezzo','Timestamp'];
+      const header = ['ID','Tag RFID','Prodotto','Movimento','Prezzo','Timestamp'];
       const csvRows = [
         header.join(';'),
-        ...allData.map(r => [r.id, r.product_id, r.product_name, r.price, r.read_at].join(';'))
+        ...allData.map(r => [r.id, r.product_id, r.product_name, r.movement, r.price, r.read_at].join(';'))
       ];
       const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
       const a    = document.createElement('a');
@@ -603,44 +580,46 @@
       a.download = `rfid_export_${Date.now()}.csv`;
       a.click();
     }
-
-    // ── Event listeners ──────────────────────────────────────
+ 
     document.getElementById('btn-refresh').addEventListener('click', loadData);
     document.getElementById('btn-export').addEventListener('click', exportCSV);
-
+ 
     document.getElementById('search').addEventListener('input', e => {
       filterText = e.target.value;
       renderTable();
     });
-
-    // Ordinamento colonne
+ 
+    document.querySelectorAll('.mov-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mov-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterMov = btn.dataset.mov;
+        renderTable();
+      });
+    });
+ 
     document.querySelectorAll('th[data-col]').forEach(th => {
       th.addEventListener('click', () => {
         const col = th.dataset.col;
         if (sortCol === col) sortAsc = !sortAsc;
         else { sortCol = col; sortAsc = true; }
-
         document.querySelectorAll('th').forEach(t => t.classList.remove('active'));
         th.classList.add('active');
         th.querySelector('.sort-arrow').textContent = sortAsc ? '↑' : '↓';
         renderTable();
       });
     });
-
-    // ── Clock nel footer ─────────────────────────────────────
+ 
     function updateClock() {
       document.getElementById('footer-time').textContent =
         new Date().toLocaleString('it-IT', { hour12: false });
     }
     updateClock();
     setInterval(updateClock, 1000);
-
-    // ── Auto-refresh ogni 30 secondi ─────────────────────────
+ 
     setInterval(loadData, 30000);
-
-    // ── Avvio ────────────────────────────────────────────────
     loadData();
   </script>
-
+ 
 </body>
 </html>
