@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $host = 'db';
 $db   = 'rfid_db';
 $user = 'rfid_user';
-$pass = 'rfidpass_difficile!';
+$pass = 'rfidpass_difficile';
 
 // ── Leggi il JSON inviato dall'ESP32 ─────────────────────────
 $data     = json_decode(file_get_contents('php://input'), true);
