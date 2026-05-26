@@ -15,10 +15,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // ── Stesse variabili d'ambiente del tuo api.php ───────────────
-$host = getenv('MYSQL_HOST')     ?: 'db';
-$db   = getenv('MYSQL_DATABASE') ?: 'rfid_db';
-$user = getenv('MYSQL_USER')     ?: 'rfid_user';
-$pass = getenv('MYSQL_PASSWORD') ?: '';
+$host = 'db';
+$db   = 'rfid_db';
+$user = 'rfid_user';
+$pass = 'rfidpass_difficile!';
 
 // ── Leggi il JSON inviato dall'ESP32 ─────────────────────────
 $data     = json_decode(file_get_contents('php://input'), true);
