@@ -28,6 +28,8 @@ if ($conn->connect_error) {
 
 $conn->set_charset('utf8mb4');
 
+$conn->query("SET time_zone = '+02:00'");
+
 // ── Query: ultimi 100 record ordinati per data decrescente ────
 // AGGIUNTO: campo movement
 $sql = "SELECT 
